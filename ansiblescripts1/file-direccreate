@@ -4,33 +4,33 @@
   vars_prompt:
     - name: directory_path
       prompt: "Enter the directory path:"
-      private: no
+      private: no                                 //user can see the input while typing
     - name: file_name
       prompt: "Enter the name of the file:"
       private: no
 
   tasks:
     - name: Check if directory exists
-      stat:
+      stat:                                      //gather details about files and directories,including owner,group 
         path: "{{ directory_path }}"
-      register: directory_exists
+      register: directory_exists                 //will store the output result of the command
 
-    - name: Check if file exists
-      stat:
+    - name: Check if file exists 
+      stat:       
         path: "{{ directory_path }}/{{ file_name }}"
       register: file_exists
 
     - name: Create directory if it doesn't exist
       file:
         path: "{{ directory_path }}"
-        state: directory
+        state: directory                      //create a directory
       when: not directory_exists.stat.exists
 
     - name: Create new file if it doesn't exist
       file:
         path: "{{ directory_path }}/{{ file_name }}"
-        state: touch
-      when: not file_exists.stat.exists
+        state: touch                              //create a file
+      when: not file_exists.stat.exists           //condition check
 
     - name: Display status message
       debug:
