@@ -2,19 +2,19 @@
 - name: Check service installation
   hosts: all
   vars:
-    services_to_check:
+    services_to_check:                            //variable 
       - sshd
       - apache2
       
 
   tasks:
     - name: Check if the services are installed
-      shell: "which {{ item }}"
-      loop: "{{ services_to_check }}"
+      shell: "which {{ item }}"                    //executing as a shell command
+      loop: "{{ services_to_check }}"              //with_items can also be used
       register: service_check_results
       ignore_errors: true
 
     - name: Print installation status
-      debug:
+      debug:                                        //to print while executing ansible scripting 
         msg: "Service {{ item.item }} is {{ 'installed' if not item.rc else 'not installed' }}"
       loop: "{{ service_check_results.results }}"
