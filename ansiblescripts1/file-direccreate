@@ -1,0 +1,48 @@
+---
+- name: Check file and directory existence
+  hosts: localhost
+  vars_prompt:
+    - name: directory_path
+      prompt: "Enter the directory path:"
+      private: no
+    - name: file_name
+      prompt: "Enter the name of the file:"
+      private: no
+
+  tasks:
+    - name: Check if directory exists
+      stat:
+        path: "{{ directory_path }}"
+      register: directory_exists
+
+    - name: Check if file exists
+      stat:
+        path: "{{ directory_path }}/{{ file_name }}"
+      register: file_exists
+
+    - name: Create directory if it doesn't exist
+      file:
+        path: "{{ directory_path }}"
+        state: directory
+      when: not directory_exists.stat.exists
+
+    - name: Create new file if it doesn't exist
+      file:
+        path: "{{ directory_path }}/{{ file_name }}"
+        state: touch
+      when: not file_exists.stat.exists
+
+    - name: Display status message
+      debug:
+        msg: |
+          {% if directory_exists.stat.exists %}
+          Directory "{{ directory_path }}" already exists.
+          {% else %}
+          Directory "{{ directory_path }}" created.
+          {% endif %}
+      
+          {% if file_exists.stat.exists %}
+          File "{{ directory_path }}/{{ file_name }}" already exists.
+          {% else %}
+          File "{{ directory_path }}/{{ file_name }}" created.
+          {% endif %}
