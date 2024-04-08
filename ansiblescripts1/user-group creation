@@ -1,0 +1,43 @@
+---
+- name: Create or update user and manage group membership
+  hosts: localhost
+  gather_facts: no
+  vars_prompt:
+    - name: new_username
+      prompt: "Enter the username"
+      private: no
+    - name: new_password
+      prompt: "Enter the password for the new user"
+      private: yes
+    - name: new_user_groups
+      prompt: "Enter the groups for the new user (comma-separated)"
+      private: no
+
+  tasks:
+    - name: Ensure user is present and password is set
+      user:
+        name: "{{ new_username }}"
+        password: "{{ new_password | password_hash('sha512') }}"
+        update_password: always
+        shell: /bin/bash
+        createhome: yes
+      register: user_creation
+
+    - name: Remove user from default group
+      group:
+        name: "{{ ansible_ssh_user }}"
+        state: absent
+        members: "{{ new_username }}"
+      when: user_creation.changed
+
+    - name: Add user to specified groups
+      group:
+        name: "{{ item }}"
+        state: present
+        members: "{{ new_username }}"
+      loop: "{{ new_user_groups.split(',') }}"
+      when: user_creation.changed
+
+    - name: Display message if user is created or updated
+      debug:
+        msg: "User '{{ new_username }}' has been {{ 'created' if user_creation.changed else 'updated' }}."
