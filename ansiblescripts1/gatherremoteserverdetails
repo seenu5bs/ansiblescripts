@@ -1,5 +1,5 @@
 ---
-- name: Gather remote server details and save to file
+- name: Gather and save remote server details
   hosts: all
   gather_facts: yes
 
@@ -7,10 +7,10 @@
     - name: Gather facts about remote servers
       setup:
         
-    - name: Write server details to a file
+    - name: Write server details to individual files
       copy:
         content: "{{ ansible_facts }}"
-        dest: "/path/to/your/output/server_details.json"
+        dest: "/path/to/your/output/server_details_{{ inventory_hostname }}.json"
 
 
 
