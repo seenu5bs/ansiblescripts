@@ -1,0 +1,18 @@
+---
+- name: Gather remote server details and save to file
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+    - name: Gather facts about remote servers
+      setup:
+        
+    - name: Write server details to a file
+      copy:
+        content: "{{ ansible_facts }}"
+        dest: "/path/to/your/output/server_details.json"
+
+
+
+
+adhoc command:ansible localhost -m setup
