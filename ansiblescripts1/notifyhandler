@@ -1,0 +1,17 @@
+---
+- name: Update Apache service when index.html changes
+  hosts: your_server_group
+  become: yes
+
+  tasks:
+    - name: Copy index.html file
+      copy:
+        src: /path/to/your/local/index.html
+        dest: /var/www/html/index.html
+      notify: restart apache service
+
+  handlers:
+    - name: restart apache service
+      service:
+        name: apache2  # or httpd depending on your system
+        state: restarted
